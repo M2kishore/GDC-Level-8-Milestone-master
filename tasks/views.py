@@ -130,7 +130,7 @@ class TaskView(View):
 
 class TestView(View):
     def get(self, request):
-        test_background_jobs.delay()
+        #test_background_jobs.delay()
         return render(request, "test.html")
 
 

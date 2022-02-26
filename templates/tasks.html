@@ -1,3 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
 <h1>Add Task</h1>
 <form action="/add-task" method="get">
     <input type="text" name="task" />
@@ -21,3 +23,4 @@
     <a href="?page={{page}}&search={{request.GET.search}}">{{page}}</a>
 </li>
 {% endfor %}
+{% endblock %}
