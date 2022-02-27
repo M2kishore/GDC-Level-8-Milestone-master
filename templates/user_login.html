@@ -1,4 +1,6 @@
+{% extends "base.html" %} {% block content %}
 <form action="" method="post">
   {{request.current_time}} {{form.as_p}} {% csrf_token %}
   <button type="submit">Login</button>
 </form>
+{% endblock content %}

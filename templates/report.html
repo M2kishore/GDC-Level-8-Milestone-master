@@ -1,0 +1,6 @@
+{% extends "base.html" %} {% block content %}
+<form action="" method="post" class="flex flex-col my-4">
+  {% csrf_token %} {{form.as_p}}
+  <button type="submit">Submit</button>
+</form>
+{% endblock content %}
