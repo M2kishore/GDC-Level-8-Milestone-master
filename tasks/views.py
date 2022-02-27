@@ -16,7 +16,7 @@ from django.contrib.auth.views import LoginView
 from tasks.tasks import test_background_jobs
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from tasks.models import Task
+from tasks.models import Report, Task
 
 
 class AuthorizedTaskManager(LoginRequiredMixin):
@@ -32,6 +32,11 @@ class UserCreateView(CreateView):
     form_class = UserCreationForm
     template_name = "user_create.html"
     success_url = "/user/login"
+
+    def form_valid(self, form):
+        self.object = form.save()
+        Report.objects.create(user=self.object)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 def session_storage_view(request):
@@ -68,6 +73,14 @@ class TaskCreateForm(ModelForm):
         fields = ("title", "description", "completed")
 
 
+class ReportForm(ModelForm):
+    class Meta:
+        model = Report
+        fields = [
+            "report_time",
+        ]
+
+
 class GenericTaskUpdateView(UpdateView):
     model = Task
     form_class = TaskCreateForm
@@ -76,6 +89,16 @@ class GenericTaskUpdateView(UpdateView):
 
     def get_queryset(self):
         return Task.objects.filter(deleted=False, user=self.request.user)
+
+
+class GenericReportView(UpdateView):
+    queryset = Report.objects.all()
+    form_class = ReportForm
+    success_url = "/tasks"
+    template_name = "report.html"
+
+    def get_queryset(self):
+        return Report.objects.filter(user=self.request.user)
 
 
 class GenericTaskCreateView(CreateView):
@@ -104,6 +127,15 @@ class GenericTaskView(LoginRequiredMixin, ListView):
             tasks = tasks.filter(title__icontains=search_string)
         return tasks
 
+    def get_context_data(self, **kwargs):
+        context = super(GenericTaskView, self).get_context_data(**kwargs)
+        context.update(
+            {
+                "report_id": Report.objects.get(user=self.request.user).pk,
+            }
+        )
+        return context
+
 
 class CreateTaskView(View):
     def get(self, request):
@@ -130,7 +162,7 @@ class TaskView(View):
 
 class TestView(View):
     def get(self, request):
-        test_background_jobs.delay()
+        # test_background_jobs.delay()
         return render(request, "test.html")
 
 
@@ -142,10 +174,11 @@ class TestStaticView(View):
 
 def task_view(request):
     tasks = Task.objects.filter(deleted=False)
+    report = Report.objects.filter(user=request.user)
     search_string = request.GET.get("search")
     if search_string:
         tasks = tasks.filter(title__icontains=search_string)
-    return render(request, "tasks.html", {"tasks": tasks})
+    return render(request, "tasks.html", {"tasks": tasks, "report": report})
 
 
 def add_task_view(request):

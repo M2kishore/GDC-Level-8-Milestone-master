@@ -33,3 +33,8 @@ def test_background_jobs():
     for i in range(10):
         time.sleep(1)
         print(i)
+
+
+@app.task
+def cool_down():
+    time.sleep(3600 * 2)
