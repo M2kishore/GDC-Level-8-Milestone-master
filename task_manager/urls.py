@@ -34,21 +34,21 @@ from tasks.views import (
     task_view,
 )
 
-from tasks.apiViews import TaskListAPI
+# from tasks.apiViews import TaskListAPI
 
 from django.contrib.auth.views import LogoutView
 
-from tasks.apiViews import TaskViewSet
+#from tasks.apiViews import TaskViewSet
 
-from rest_framework.routers import SimpleRouter
+#from rest_framework.routers import SimpleRouter
 
-router = SimpleRouter()
-router.register("api/tasks", TaskViewSet)
+#router = SimpleRouter()
+#router.register("api/tasks", TaskViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("tasks/", GenericTaskView.as_view()),
-    path("tasksapi/", TaskListAPI.as_view()),
+    #path("tasksapi/", TaskListAPI.as_view()),
     path("create-task/", GenericTaskCreateView.as_view()),
     path("report/<pk>", GenericReportView.as_view()),
     path("update-task/<pk>", GenericTaskUpdateView.as_view()),
@@ -62,4 +62,5 @@ urlpatterns = [
     path("test/", TestView.as_view()),
     path("test-static/", TestStaticView.as_view()),
     # path("delete-task/<int:id>/", delete_task_view),
-] + router.urls
+]
+# + router.urls
