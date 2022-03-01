@@ -20,3 +20,4 @@ class Task(models.Model):
 class Report(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True)
     report_time = models.TimeField(default=datetime.time(9, 00))
+    report_date = models.DateField(default=datetime.date.today, null=True)
