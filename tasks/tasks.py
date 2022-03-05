@@ -17,16 +17,11 @@ from task_manager.celery import app
 @periodic_task(run_every=timedelta(seconds=10))
 def send_mail_reminder():
     now_time = datetime.datetime.now().time()
+    now_date = datetime.date.today()
+    # fetching reports for sent reports yesterday at the given time
     reports = Report.objects.filter(
-        report_time__range=[now_time - timedelta(seconds=10), now_time]
+        report_time__lte=now_time, report_date__lte=now_date - timedelta(days=1)
     )
-    for report in reports:
-        send_mail(report)
-
-
-@periodic_task(run_every=timedelta(seconds=60))
-def not_sent_mail():
-    reports = Report.objects.filter(report_date=None)
     for report in reports:
         send_mail(report)
 
@@ -43,5 +38,6 @@ def send_mail(report):
             [report_user.email],
         )
         report.report_date = datetime.date.today()
+        report.save()
     except:
-        report.report_date = None
+        pass
